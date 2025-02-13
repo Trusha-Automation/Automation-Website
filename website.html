@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Toggle Switches</title>
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHM3IfWaxLpTg5-VgmMo9LY8jjqNhlPw0",
+            authDomain: "automation-5ffdc.firebaseapp.com",
+            databaseURL: "https://automation-5ffdc-default-rtdb.firebaseio.com",
+            projectId: "automation-5ffdc",
+            storageBucket: "automation-5ffdc.firebasestorage.app",
+            messagingSenderId: "350917787775",
+            appId: "1:350917787775:web:4f5a38de0197d6b803bf4a",
+            measurementId: "G-LMMWVWR9B8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Function to update toggle state in Firebase
+        function updateToggle(switchId, value) {
+            console.log(`Updating ${switchId} to`, value);
+            set(ref(db, 'switches/' + switchId), value)
+                .then(() => console.log("Data saved successfully"))
+                .catch((error) => console.error("Error saving data:", error));
+        }
+
+        // Function to sync switch states from Firebase
+        function syncSwitches() {
+            for (let i = 1; i <= 4; i++) {
+                const switchRef = ref(db, 'switches/switch' + i);
+                const switchElement = document.getElementById('switch' + i);
+                onValue(switchRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(`Fetched switch${i}:`, snapshot.val());
+                        switchElement.checked = snapshot.val();
+                    } else {
+                        console.warn(`switch${i} does not exist in database.`);
+                    }
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            syncSwitches();
+            document.querySelectorAll('.toggle-switch').forEach((toggle) => {
+                toggle.addEventListener('change', (event) => {
+                    updateToggle(event.target.id, event.target.checked);
+                });
+            });
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .switch-container {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Firebase Toggle Switches</h2>
+    <div class="switch-container">
+        <label>Switch 1: <input type="checkbox" id="switch1" class="toggle-switch"></label>
+    </div>
+    <div class="switch-container">
+        <label>Switch 2: <input type="checkbox" id="switch2" class="toggle-switch"></label>
+    </div>
+    <div class="switch-container">
+        <label>Switch 3: <input type="checkbox" id="switch3" class="toggle-switch"></label>
+    </div>
+    <div class="switch-container">
+        <label>Switch 4: <input type="checkbox" id="switch4" class="toggle-switch"></label>
+    </div>
+</body>
+</html>
