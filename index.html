@@ -4,89 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase Toggle Switches</title>
-    <script type="module">
-        // Import Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCHM3IfWaxLpTg5-VgmMo9LY8jjqNhlPw0",
-            authDomain: "automation-5ffdc.firebaseapp.com",
-            databaseURL: "https://automation-5ffdc-default-rtdb.firebaseio.com",
-            projectId: "automation-5ffdc",
-            storageBucket: "automation-5ffdc.firebasestorage.app",
-            messagingSenderId: "350917787775",
-            appId: "1:350917787775:web:4f5a38de0197d6b803bf4a",
-            measurementId: "G-LMMWVWR9B8"
-        };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const analytics = getAnalytics(app);
+    <script type="module" src="js/script.js"></script>
+    <!-- <script src="js/menu.js"></script> -->
 
-        // Function to update toggle state in Firebase
-        function updateToggle(switchId, value) {
-            console.log(`Attempting to update ${switchId} to`, value);
-            set(ref(db, 'switches/' + switchId), value)
-                .then(() => console.log(`✅ Data successfully saved to Firebase for ${switchId}`))
-                .catch((error) => console.error(`❌ Firebase write error: ${error.message}`));
-        }
 
-        // Function to sync switch states from Firebase
-        function syncSwitches() {
-            for (let i = 1; i <= 4; i++) {
-                const switchRef = ref(db, 'switches/switch' + i);
-                const switchElement = document.getElementById('switch' + i);
-                onValue(switchRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(`Fetched switch${i}:`, snapshot.val());
-                        switchElement.checked = snapshot.val();
-                    } else {
-                        console.warn(`switch${i} does not exist in database.`);
-                    }
-                });
-            }
-        }
+    <!-- <link rel="stylesheet" href="style/styles.css"> -->
+    <!-- <link rel="stylesheet" href="style/navbar.css"> -->
+    <!-- <link rel="stylesheet" href="style/sidebar.css"> -->
 
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("Page Loaded - Syncing Switches");
-            syncSwitches();
-            document.querySelectorAll('input[type="checkbox"]').forEach((toggle) => {
-                console.log(`Attaching event listener to: ${toggle.id}`);
-                toggle.addEventListener('change', (event) => {
-                    console.log(`Switch toggled: ${event.target.id}, New State: ${event.target.checked}`);
-                    updateToggle(event.target.id, event.target.checked);
-                });
-            });
-        });
-    </script>
+
+    
     <style>
         html,
         body {
             height: 100%;
             margin: 0;
+            padding-top: 60px; 
+            /* overflow: hidden; */
         }
 
-        .wrapper {
+        /* .wrapper {
             min-height: 100%;
             display: flex;
             flex-direction: column;
-        }
+        } */
 
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            width: 100%;
             background-color: #333;
-            color: #fff;
-            padding: 10px;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
             position: fixed;
             top: 0;
-            width: 100%;
-            z-index: 1;
+            left: 0;
+            z-index: 1000;
         }
 
         .switch-holder {
@@ -173,7 +129,10 @@
 
 
 <body>
-    <h2>Firebase Toggle Switches</h2>
+    <div class="navbar">
+        <!-- <button class="menu-button" onclick="openNav()">☰</button> -->
+        Firebase Toggle Switches
+    </div>
     
     <div class="switch-holder">
         <div class="switch-label">
