@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase Toggle Switches</title>
-
     <script type="module">
         // Import Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -25,13 +25,14 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const analytics = getAnalytics(app);
 
         // Function to update toggle state in Firebase
         function updateToggle(switchId, value) {
-            console.log(`Updating ${switchId} to`, value);
+            console.log(`Attempting to update ${switchId} to`, value);
             set(ref(db, 'switches/' + switchId), value)
-                .then(() => console.log("Data saved successfully"))
-                .catch((error) => console.error("Error saving data:", error));
+                .then(() => console.log(`✅ Data successfully saved to Firebase for ${switchId}`))
+                .catch((error) => console.error(`❌ Firebase write error: ${error.message}`));
         }
 
         // Function to sync switch states from Firebase
@@ -51,24 +52,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            console.log("Page Loaded - Syncing Switches");
             syncSwitches();
-            document.querySelectorAll('.toggle-switch').forEach((toggle) => {
+            document.querySelectorAll('input[type="checkbox"]').forEach((toggle) => {
+                console.log(`Attaching event listener to: ${toggle.id}`);
                 toggle.addEventListener('change', (event) => {
+                    console.log(`Switch toggled: ${event.target.id}, New State: ${event.target.checked}`);
                     updateToggle(event.target.id, event.target.checked);
                 });
             });
         });
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .switch-container {
-            margin: 10px;
-        }
-    </style>
     <style>
         html,
         body {
@@ -82,8 +76,6 @@
             flex-direction: column;
         }
 
-
-        /* Navbar styles */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -97,125 +89,6 @@
             z-index: 1;
         }
 
-        /* Logo styles */
-        .navbar .logo {
-            color: white;
-
-            margin-left: 20px;
-            /* Adjust the margin as needed */
-        }
-
-        /* Button container */
-        .navbar .btn-container {
-            /* display: flex; */
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Button styles */
-        .navbar .btn {
-            padding: 17px 40px;
-            margin-left: 30px;
-            margin-right: 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            border: 0;
-            background-color: white;
-            box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            font-size: 15px;
-            transition: all 0.5s ease;
-            color: black;
-        }
-
-        .navbar .btn:hover {
-            letter-spacing: 3px;
-            background-color: hsl(261deg 80% 48%);
-            color: hsl(0, 0%, 100%);
-            box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
-        }
-
-        .navbar .btn:active {
-            letter-spacing: 3px;
-            background-color: hsl(261deg 80% 48%);
-            color: hsl(0, 0%, 100%);
-            box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
-            transform: translateY(10px);
-            transition: 100ms;
-        }
-
-         .container {
-            border: 2px solid black;
-
-
-        }
-
-        /* For screens smaller than 600px (e.g., mobile phones) */
-        @media screen and (max-width: 800px) {
-            .navbar .logo {
-                font-size: 20px;
-            }
-
-            .navbar .btn {
-                padding: 12px 24px;
-                /* Reduce button padding for smaller screens */
-                font-size: 8px;
-                /* Reduce font size for smaller screens */
-                height: 30px;
-                display: block;
-                align-items: center;
-                margin-top: 20px;
-            }
-
-            .container {
-                margin-top: 120px;
-                /* Adjust this value based on your navbar height */
-            }
-
-
-        }
-
-        /* For screens between 600px and 1024px (e.g., tablets and small laptops) */
-        @media screen and (min-width: 801px) and (max-width: 2000px) {
-
-            .navbar .logo {
-                font-size: 40px;
-            }
-
-            .navbar .btn {
-                /* display: flex; */
-                padding: 15px 30px;
-                /* Adjust button padding for medium-sized screens */
-                font-size: 14px;
-                /* Adjust font size for medium-sized screens */
-                height: 70px;
-                width: 200px;
-                margin-top: 20px;
-            }
-
-            .container {
-                margin-top: 130px;
-                /* Adjust this value based on your navbar height */
-            }
-        }
-
-        /* Container styles */
-        .container {
-            display: flex;
-            flex: 1;
-        }
-
-        .container .main-div {
-            flex: 1;
-            padding: 20px;
-            /* background-color: #f0f0f0; */
-            /* border: 1px solid #ccc; */
-            margin: 10px;
-            display: block;
-            /* Initially hide the div */
-        }
-
         .switch-holder {
             display: flex;
             padding: 10px 20px;
@@ -227,36 +100,8 @@
             justify-content: space-between;
             align-items: center;
             width: 50%;
-            /* Set width to 80% of the viewport */
             margin: 0 auto;
-            /* Center horizontally */
             margin-top: 10px;
-        }
-
-        .switch-holder:not(:last-child) {
-            margin-bottom: 20px;
-            /* Add margin between buttons */
-        }
-
-
-        @media only screen and (min-width: 768px) {
-
-            /* Adjust for larger screens like laptops */
-            .switch-holder {
-                width: 50%;
-                /* Set width to 50% of the viewport */
-            }
-        }
-
-        @media only screen and (max-width: 480px) {
-
-            /* Adjust for smaller screens like mobile */
-            .switch-holder {
-                flex-direction: column;
-                /* Stack buttons vertically */
-                align-items: flex-start;
-                /* Align buttons to the start */
-            }
         }
 
         .switch-label {
@@ -265,10 +110,6 @@
 
         .switch-label i {
             margin-right: 5px;
-        }
-
-        .switch-toggle {
-            height: 40px;
         }
 
         .switch-toggle input[type="checkbox"] {
@@ -316,115 +157,64 @@
         }
 
         .footer {
-            /* flex-shrink: 0; */
-            /* background-color: #333; */
-            /* color: #fff; */
-            /* text-align: center; */
-            /* line-height: 60px; */
             background-color: #333;
             text-align: center;
             color: #fff;
             padding: 20px;
             margin-top: 10px;
-            position: none;
-            bottom: 0;
             width: 100%;
             z-index: 1;
         }
     </style>
 </head>
+
+
+
+
+
 <body>
-    <div class="wrapper">
-        <div class="navbar">
-            <!-- Logo -->
-            <div class="logo">NexInnovation</div>
-
-            <!-- Button container -->
-            <div class="btn-container">
-                <!-- Removed the "Home" link -->
-                <!-- <button class="btn" onclick="showMainOffice()">Main Office</button> -->
-                <button class="btn" >Main Office</button>
-                <!-- <button class="btn" onclick="showWorkshop()">Workshop</button> -->
-                <button class="btn" >Workshop</button>
-                <!-- Add more links as needed -->
-            </div>
+    <h2>Firebase Toggle Switches</h2>
+    
+    <div class="switch-holder">
+        <div class="switch-label">
+            <span>Switch 1</span>
         </div>
-
-        <div class="container">
-
-            <div id="mainOffice" class="main-div">
-
-                <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-bluetooth-b"></i><span>Main Light 1</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="switch1">
-                        <label for="button1"></label>
-                    </div>
-                </div>
-
-                <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-wifi"></i><span>Main Light 2</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="switch2">
-                        <label for="button2"></label>
-                    </div>
-                </div>
-
-                <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-volume-up"></i><span>Main Fan</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="switch3">
-                        <label for="button3"></label>
-                    </div>
-                </div>
-
-                <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-lightbulb"></i><span>Office Light 1</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="switch4">
-                        <label for="button4"></label>
-                    </div>
-                </div>
-
-                <!-- <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-music"></i><span>Office Light 2</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="button5">
-                        <label for="button5"></label>
-                    </div>
-                </div>
-
-                <div class="switch-holder">
-                    <div class="switch-label">
-                        <i class="fa fa-sun"></i><span>Office Fan</span>
-                    </div>
-                    <div class="switch-toggle">
-                        <input type="checkbox" id="button6">
-                        <label for="button6"></label>
-                    </div>
-                </div> -->
-            </div>
-
-            <!-- <div id="workshop" class="main-div">
-                <p>workshop</p>
-
-            </div> -->
+        <div class="switch-toggle">
+            <input type="checkbox" id="switch1">
+            <label for="switch1"></label>
         </div>
-
-        <footer class="footer">
-            <p>&copy; 2023 Nexinnovation. All rights reserved.</p>
-            <p>Powered by Parth</p>
-        </footer>
     </div>
+    
+    <div class="switch-holder">
+        <div class="switch-label">
+            <span>Switch 2</span>
+        </div>
+        <div class="switch-toggle">
+            <input type="checkbox" id="switch2">
+            <label for="switch2"></label>
+        </div>
+    </div>
+
+    <div class="switch-holder">
+        <div class="switch-label">
+            <span>Switch 3</span>
+        </div>
+        <div class="switch-toggle">
+            <input type="checkbox" id="switch3">
+            <label for="switch3"></label>
+        </div>
+    </div>
+
+    <div class="switch-holder">
+        <div class="switch-label">
+           <span>Switch 4</span>
+        </div>
+        <div class="switch-toggle">
+            <input type="checkbox" id="switch4">
+            <label for="switch4"></label>
+        </div>
+    </div>
+
 </body>
+
 </html>
