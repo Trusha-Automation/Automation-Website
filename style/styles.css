@@ -30,6 +30,16 @@ body {
     z-index: 1000;
 }
 
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 60px; /* Adjust for navbar height */
+    padding-bottom: 100px; /* Prevent content from overlapping footer */
+}
+
 .switch-holder {
     display: flex;
     padding: 10px 20px;
